@@ -73,8 +73,6 @@ class App(customtkinter.CTk):
                 try:
                     video.register_on_progress_callback(self.on_download_progress)
                     self.video_title_label.configure(text=f'Downloading: {video.title} | ({self.downloaded_videos + 1}/{self.num_videos})')
-                    print(f'Downloading: {video.title} | ({self.downloaded_videos + 1}/{self.num_videos})')
-                    print()
                     video.streams.get_highest_resolution().download(download_path + f'/{playlist.title}')
                     self.downloaded_videos += 1
                     self.video_title_label.configure(text='Waiting 10 seconds to avoid getting blocked...')
@@ -99,8 +97,6 @@ class App(customtkinter.CTk):
                 yt = YouTube(url, on_progress_callback=self.on_download_progress)
                 self.video_title_label.configure(text=f'Downloading: {yt.title} | ({self.downloaded_videos + 1}/{self.num_videos})')
                 yt.streams.get_highest_resolution().download(download_path)
-                print(f'Downloading: {video.title} | ({self.downloaded_videos + 1}/{self.num_videos})')
-                print()
             except ExtractError:
                 self.video_title_label.configure(text='Extract error, skipping...')
                 time.sleep(3)
