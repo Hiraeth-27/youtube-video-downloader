@@ -84,7 +84,7 @@ class App(customtkinter.CTk):
                 try:
                     video.register_on_progress_callback(self.on_download_progress)
                     self.info_frame.set_video_title(text=f'Downloading: {video.title} | ({self.downloaded_videos + 1}/{self.num_videos})')
-                    video.streams.get_highest_resolution().download(download_path + f'/{playlist.title}', max_retries=5)
+                    video.streams.get_highest_resolution().download(download_path + f'/{str.replace(playlist.title, '/', '')}', max_retries=5)
                     self.downloaded_videos += 1
                 except ExtractError:
                     self.info_frame.configure(text='Extract error, skipping...')
