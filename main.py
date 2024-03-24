@@ -35,7 +35,7 @@ class App(customtkinter.CTk):
         self.link_frame = LinkFrame(self)
         self.link_frame.grid(row=1, column=0, pady=10)
 
-        self.button = customtkinter.CTkButton(self, text='Download', command=self.download)
+        self.button = customtkinter.CTkButton(self, text='Download', command=self.download_button_callback)
         self.button.grid(row=2, column=0, pady=10)
 
         self.video_title_label = customtkinter.CTkLabel(self, text='Downloading: ')
@@ -52,12 +52,12 @@ class App(customtkinter.CTk):
         self.percentage_label.grid(row=4, column=1, padx=10, pady=10)
 
 
-    def download(self):
-        download = Thread(target = self.download_callback)
+    def download_button_callback(self):
+        download = Thread(target = self.download)
         download.start()
         self.button.configure(state='disabled')
 
-    def download_callback(self):
+    def download(self):
         self.num_videos = 1
         self.downloaded_videos = 0
         url = self.link_frame.get()
@@ -73,10 +73,8 @@ class App(customtkinter.CTk):
                 try:
                     video.register_on_progress_callback(self.on_download_progress)
                     self.video_title_label.configure(text=f'Downloading: {video.title} | ({self.downloaded_videos + 1}/{self.num_videos})')
-                    video.streams.get_highest_resolution().download(download_path + f'/{playlist.title}')
+                    video.streams.get_highest_resolution().download(download_path + f'/{playlist.title}', max_retries=5)
                     self.downloaded_videos += 1
-                    self.video_title_label.configure(text='Waiting 10 seconds to avoid getting blocked...')
-                    time.sleep(10)
                 except ExtractError:
                     self.video_title_label.configure(text='Extract error, skipping...')
                     time.sleep(3)
@@ -96,7 +94,7 @@ class App(customtkinter.CTk):
             try:
                 yt = YouTube(url, on_progress_callback=self.on_download_progress)
                 self.video_title_label.configure(text=f'Downloading: {yt.title} | ({self.downloaded_videos + 1}/{self.num_videos})')
-                yt.streams.get_highest_resolution().download(download_path)
+                yt.streams.get_highest_resolution().download(download_path, max_retries=5)
             except ExtractError:
                 self.video_title_label.configure(text='Extract error, skipping...')
                 time.sleep(3)
